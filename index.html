@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お前パラメーター</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">お前パラメーター</h1>
+            <p class="subtitle">タスクをこなして、新しい自分になろう！</p>
+        </header>
+
+        <main class="main-content">
+            <!-- パラメーター表示エリア -->
+            <section class="parameters-section">
+                <h2 class="section-title">あなたのステータス</h2>
+                <div class="level-display">
+                    <div class="level-info">
+                        <span class="level-label">レベル</span>
+                        <span class="level-number" id="playerLevel">1</span>
+                    </div>
+                    <div class="exp-bar">
+                        <div class="exp-fill" id="expFill"></div>
+                        <span class="exp-text" id="expText">0 / 100</span>
+                    </div>
+                </div>
+                
+                <div class="parameters-grid">
+                    <div class="parameter-card add-parameter-card" id="addParameterCard">
+                        <div class="parameter-icon">➕</div>
+                        <div class="parameter-info">
+                            <h3 class="parameter-name">追加</h3>
+                            <div class="parameter-level">
+                                <span class="param-level">+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- タスク入力エリア -->
+            <section class="task-input-section">
+                <h2 class="section-title">新しいクエスト</h2>
+                <form class="task-form" id="taskForm">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="taskInput" 
+                            placeholder="クエスト名を入力してね..."
+                            class="task-input"
+                            required
+                        >
+                        <select id="taskType" class="task-type-select">
+                            <!-- タスクタイプはJavaScriptで動的に生成 -->
+                        </select>
+                        <button type="submit" class="add-button">
+                            <span>+</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- タスクリスト -->
+            <section class="task-list-section">
+                <h2 class="section-title">クエスト一覧</h2>
+                <div class="task-list" id="taskList">
+                    <!-- タスクはここに動的に追加される -->
+                </div>
+                <div class="empty-state" id="emptyState">
+                    <p class="empty-text">まだクエストがないよ<br>新しいクエストを追加してね！</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- パラメーター編集モーダル -->
+        <div class="modal" id="editParameterModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">✏️ パラメーター編集</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="editParameterForm">
+                        <input type="hidden" id="editParamOriginalName">
+                        <div class="form-group">
+                            <label for="editParamName">パラメーター名</label>
+                            <input type="text" id="editParamName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editParamIcon">絵文字</label>
+                            <input type="text" id="editParamIcon" placeholder="例：🍀" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="editParamImage">画像URL（ピクトグラム）</label>
+                            <input type="url" id="editParamImage" placeholder="https://pictogram2.com/images/xxx.png">
+                            <small>ピクトグラムサイトの画像URLを入力（省略時は絵文字を使用）</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-button cancel-button" onclick="closeEditParameterModal()">キャンセル</button>
+                    <button class="modal-button" onclick="updateParameter()">更新</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- パラメーター追加モーダル -->
+        <div class="modal" id="addParameterModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">新しいパラメーター</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="addParameterForm">
+                        <div class="form-group">
+                            <label for="newParamName">パラメーター名</label>
+                            <input type="text" id="newParamName" placeholder="例：運、精神力など" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newParamIcon">絵文字</label>
+                            <input type="text" id="newParamIcon" placeholder="例：🍀" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label for="newParamImage">画像URL（ピクトグラム）</label>
+                            <input type="url" id="newParamImage" placeholder="https://pictogram2.com/images/xxx.png">
+                            <small>ピクトグラムサイトの画像URLを入力（省略時は絵文字を使用）</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-button cancel-button" id="cancelAddParameter">キャンセル</button>
+                    <button type="button" class="modal-button" id="confirmAddParameter">追加する</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- レベルアップモーダル -->
+        <div class="modal" id="levelUpModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">🎉 レベルアップ！ 🎉</h2>
+                </div>
+                <div class="modal-body">
+                    <p class="level-up-message" id="levelUpMessage"></p>
+                    <div class="level-up-stats" id="levelUpStats"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-button" onclick="closeLevelUpModal()">素晴らしい！</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
